@@ -1,0 +1,2 @@
+Adafruit-Blinka>=3.3.4
+adafruit-circuitpython-rfm9x>=1.2.0

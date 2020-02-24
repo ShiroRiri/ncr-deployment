@@ -24,8 +24,8 @@ def main():
 
     # Create logging threads
     stop_event = threading.Event()
-    i2c_thread = threading.Thread(target = log_i2c_devices, name = 'i2c-logger', args = (i2c_writer))
-    ow_thread = threading.Thread(target = log_ow_devices, name = 'ow-logger', args = (ow_writer))
+    i2c_thread = threading.Thread(target = log_i2c_devices, name = 'i2c-logger', args = (stop_event, i2c_writer))
+    ow_thread = threading.Thread(target = log_ow_devices, name = 'ow-logger', args = (stop_event, ow_writer))
 
     while True:
         # Await packet on channel 42 (the answer to life, universe, and everything)

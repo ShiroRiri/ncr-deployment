@@ -13,8 +13,8 @@ if __name__ == "__main__":
     main()
 
 def main():
-    i2cWriter = DataLogWriter('~/log.bin', [{'name': 'StrainGuage', 'type': FieldTypes.FLOAT}])
-    owWriter = DataLogWriter('~/log.bin', [{'name': 'TempProbe', 'type': FieldTypes.FLOAT}])
+    i2cWriter = DataLogWriter('~/i2c-log.bin', [{'name': 'StrainGuage', 'type': FieldTypes.FLOAT}])
+    owWriter = DataLogWriter('~/ow-log.bin', [{'name': 'TempProbe', 'type': FieldTypes.FLOAT}])
 
     initializeIO()
     startLogging()

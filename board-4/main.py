@@ -48,7 +48,7 @@ def initialize_io():
         # Initialize devices
         global adc, radio, temp_sensor, sg_enable
 
-        adc = ADS.ADS1115(i2c, mode=ADS.Mode.CONTINUOUS)
+        adc = ADS.ADS1115(i2c)
 
         radio_cs = digitalio.DigitalInOut(board.D7)
         radio_reset = digitalio.DigitalInOut(board.D25)
@@ -70,6 +70,7 @@ def initialize_io():
 
 def log_i2c_devices(stop_event):
     sg_enable.value = True # Enable strain guage before ADC samples
+    adc.mode = ADS.Mode.CONTINUOUS # Enter continuous capture mode for improved performance
     
     writer = DataLogWriter("~/i2c-{}.bin".format(time.strftime("%d-%m-%H:%M:%S")), [{'name': 'StrainGuage', 'type': FieldTypes.FLOAT}])
     while not stop_event.is_set():

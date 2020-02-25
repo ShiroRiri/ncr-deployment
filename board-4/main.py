@@ -48,7 +48,7 @@ def initialize_io():
         # Initialize devices
         global adc, radio, temp_sensor, sg_enable
 
-        adc = ADS.ADS1115(i2c, data_rate=860, mode=ADS.Mode.CONTINUOUS)
+        adc = ADS.ADS1115(i2c, mode=ADS.Mode.CONTINUOUS)
 
         radio_cs = digitalio.DigitalInOut(board.D7)
         radio_reset = digitalio.DigitalInOut(board.D25)
@@ -77,6 +77,10 @@ def log_i2c_devices(stop_event):
         writer.log(AnalogIn(adc, 0, 1).voltage)
         writer.endSample()
         
+    # Enter power-saving mode on ADC
+    adc.mode = ADS.Mode.SINGLE
+    AnalogIn(adc, 0, 1)
+
     writer.close()
 
 def log_ow_devices(stop_event, writer):

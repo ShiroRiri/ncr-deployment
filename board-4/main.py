@@ -1,13 +1,14 @@
 import sys
 import threading
+import time
 import board
 import busio
 import digitalio
 import adafruit_ads1x15.ads1115 as ADS
+import adafruit_rfm9x
 from adafruit_ads1x15.analog_in import AnalogIn
 from adafruit_ds18x20 import DS18X20
 from adafruit_onewire.bus import OneWireBus
-import adafruit_rfm9x
 from bintools import DataLogWriter, FieldTypes
 
 # If script is directly called, start main
@@ -17,10 +18,6 @@ if __name__ == "__main__":
 def main():
     initialize_io()
     logging = False
-
-    # Create logfiles
-    i2c_writer = DataLogWriter('~/i2c-log.bin', [{'name': 'StrainGuage', 'type': FieldTypes.FLOAT}])
-    ow_writer = DataLogWriter('~/ow-log.bin', [{'name': 'TempProbe', 'type': FieldTypes.FLOAT}])
 
     # Create logging threads
     stop_event = threading.Event()
@@ -71,16 +68,27 @@ def initialize_io():
         print("Error while initializing IO - {}\n".format(e.message))
         sys.exit(1)
 
-def log_i2c_devices(stop_event, writer):
+def log_i2c_devices(stop_event):
     sg_enable.value = True # Enable strain guage before ADC samples
-
+    adc.mode = ADS.Mode.CONTINUOUS # Enter continuous capture mode for improved performance
+    
+    writer = DataLogWriter("~/i2c-{}.bin".format(time.strftime("%d-%m-%H:%M:%S")), [{'name': 'StrainGuage', 'type': FieldTypes.FLOAT}])
     while not stop_event.is_set():
         writer.beginSample()
         writer.log(AnalogIn(adc, 0, 1).voltage)
         writer.endSample()
+        
+    # Enter power-saving mode on ADC
+    adc.mode = ADS.Mode.SINGLE
+    AnalogIn(adc, 0, 1)
+
+    writer.close()
 
 def log_ow_devices(stop_event, writer):
+    writer = DataLogWriter("~/ow-{}.bin".format(time.strftime("%d-%m-%H:%M:%S")), [{'name': 'TempProbe', 'type': FieldTypes.FLOAT}])
     while not stop_event.is_set():
         writer.beginSample()
         writer.log(temp_sensor.temperature())
         writer.endSample()
+        
+    writer.close()

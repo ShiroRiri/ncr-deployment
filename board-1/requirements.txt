@@ -1,0 +1,4 @@
+Adafruit-Blinka>=3.3.4
+adafruit-circuitpython-bno055>=4.1.0
+adafruit-circuitpython-mma8451>=1.2.5
+adafruit-circuitpython-tca9548a>=0.2.2

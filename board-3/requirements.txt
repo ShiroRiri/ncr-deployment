@@ -1,0 +1,4 @@
+Adafruit-Blinka>=3.3.4
+adafruit-circuitpython-bmp3xx>=1.1.2
+adafruit-circuitpython-bme280>=2.3.3
+adafruit-circuitpython-sgp30>=2.1.2

@@ -27,7 +27,8 @@ case $board in
   ;;
 esac
 
-source $main_dir/config.txt # Load configuration
+source default/config.txt # Load default configuration
+source $main_dir/config.txt # Load specific configuration
 
 # --- Package Update ---
 echo "Updating packages...."
@@ -38,8 +39,12 @@ apt upgrade -y -qq
 echo "Installing required packages..."
 apt install -y python3-pip git -qq
 
-# --- Python Dependency Install ---
-echo "Installing python dependencies..."
+# --- Default Dependency Install ---
+echo "Installing default dependencies..."
+pip3 install -r default/requirements.txt -q
+
+# --- Dependency Install ---
+echo "Installing dependencies..."
 pip3 install -r $main_dir/requirements.txt -q
 
 # --- Default Configurations ---

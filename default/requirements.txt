@@ -1,0 +1,2 @@
+Adafruit-Blinka>=3.3.4
+paho-mqtt>=1.5.0

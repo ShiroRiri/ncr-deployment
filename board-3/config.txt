@@ -1,6 +1,3 @@
-spi="false"
 i2c="true"
-i2c_clock_stretch="false"
-onewire="false"
 
 friendly_name="rpi-3"

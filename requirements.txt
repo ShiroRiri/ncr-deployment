@@ -1,0 +1,5 @@
+Adafruit-Blinka>=3.3.4
+adafruit-circuitpython-rfm9x>=1.2.0
+adafruit-circuitpython-ads1x15>=2.1.3
+adafruit-circuitpython-ds18x20>=1.2.2
+adafruit-circuitpython-onewire>=1.1.4

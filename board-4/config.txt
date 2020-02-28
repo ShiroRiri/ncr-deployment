@@ -1,4 +1,4 @@
-spi=true
-i2c=true
-i2c_clock_stretch=true
-onewire=true
+spi="true"
+i2c="true"
+i2c_clock_stretch="true"
+onewire="true"

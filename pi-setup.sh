@@ -68,4 +68,5 @@ if "$i2c_clock_stretch"; then
   echo "dtparam=i2c_arm_baudrate=10000" >> /boot/config.txt
 fi
 
-echo "Done!"
+echo "Done! Rebooting..."
+reboot

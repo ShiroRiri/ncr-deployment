@@ -2,3 +2,5 @@ spi="false"
 i2c="true"
 i2c_clock_stretch="true"
 onewire="false"
+
+friendly_name="rpi-1"

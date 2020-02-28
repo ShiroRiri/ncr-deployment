@@ -5,14 +5,14 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # --- Board Select ---
-BOARD=$(whiptail --backtitle "NCR Pi Setup" \
+board=$(whiptail --backtitle "NCR Pi Setup" \
   --menu "Select configuration" 15 60 4 \
   "RPi-1" "BNO055, MMA8451, TCA9548A" \
   "RPi-2" "DS18B20, ADS1115, Strain Guages" \
   "RPi-3" "BMP388, BME280, SGP30" \
   "RPi-4 [Zero]" "RFM96W, DS18B20, ADS1115, Strain Guage" 3>&1 1>&2 2>&3)
 
-case $BOARD in
+case $board in
   "RPi-1")
     main_dir="board-1"
   ;;
@@ -40,30 +40,32 @@ apt install -y python3-pip git -qq
 
 # --- Python Dependency Install ---
 echo "Installing python dependencies..."
-pip3 -r $main_dir/requirements.txt -q
+pip3 install -r $main_dir/requirements.txt -q
 
 # --- Default Configurations ---
 echo "Enabling default configs..."
 raspi-config nonint do_overscan 0
 raspi-config nonint do_ssh 1
+echo -n $friendly_name > /etc/hostname
 
 # --- Board Specific Configurations ---
 echo "Enabling board-specific configs..."
 
 if "$spi"; then
-  raspi-config noint do_spi 1
+  raspi-config nonint do_spi 1
 fi
 
 if "$i2c"; then
-  raspi-config noint do_i2c 1
+  raspi-config nonint do_i2c 1
 fi
 
 if "$onewire"; then
-  raspi-config noint do_onewire 1
+  raspi-config nonint do_onewire 1
 fi
 
 if "$i2c_clock_stretch"; then
-  echo "dtparam=i2c_arm_baudrate=10000" >> /boot/config
+  echo "# I2C Clock Stretch" >> /boot/config.txt
+  echo "dtparam=i2c_arm_baudrate=10000" >> /boot/config.txt
 fi
 
 echo "Done!"

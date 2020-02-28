@@ -31,16 +31,16 @@ source $main_dir/config.txt # Load configuration
 
 # --- Package Update ---
 echo "Updating packages...."
-apt update &&
-apt upgrade -y
+apt update -qq &&
+apt upgrade -y -qq
 
 # --- Package Install ---
 echo "Installing required packages..."
-apt install -y python3-pip
+apt install -y python3-pip git -qq
 
 # --- Python Dependency Install ---
 echo "Installing python dependencies..."
-pip3 -r $main_dir/requirements.txt
+pip3 -r $main_dir/requirements.txt -q
 
 # --- Default Configurations ---
 echo "Enabling default configs..."

@@ -64,8 +64,7 @@ if "$onewire"; then
 fi
 
 if "$i2c_clock_stretch"; then
-  echo "# I2C Clock Stretch" >> /boot/config.txt
-  echo "dtparam=i2c_arm_baudrate=10000" >> /boot/config.txt
+  sed -r "s/dtparam=i2c_arm=on/dtparam=i2c_arm=on\ndtparam=i2c_arm_baudrate=10000" /boot/config.txt
 fi
 
 echo "Done! Rebooting..."

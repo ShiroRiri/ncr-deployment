@@ -44,23 +44,23 @@ pip3 install -r $main_dir/requirements.txt -q
 
 # --- Default Configurations ---
 echo "Enabling default configs..."
-raspi-config nonint do_overscan 0
-raspi-config nonint do_ssh 1
+raspi-config nonint do_overscan 1
+raspi-config nonint do_ssh 0
 echo -n $friendly_name > /etc/hostname
 
 # --- Board Specific Configurations ---
 echo "Enabling board-specific configs..."
 
 if "$spi"; then
-  raspi-config nonint do_spi 1
+  raspi-config nonint do_spi 0
 fi
 
 if "$i2c"; then
-  raspi-config nonint do_i2c 1
+  raspi-config nonint do_i2c 0
 fi
 
 if "$onewire"; then
-  raspi-config nonint do_onewire 1
+  raspi-config nonint do_onewire 0
 fi
 
 if "$i2c_clock_stretch"; then

@@ -11,10 +11,6 @@ from adafruit_ds18x20 import DS18X20
 from adafruit_onewire.bus import OneWireBus
 from bintools import DataLogWriter, FieldTypes
 
-# If script is directly called, start main
-if __name__ == "__main__":
-    main()
-
 def main():
     initialize_io()
     logging = False
@@ -36,7 +32,7 @@ def main():
             logging = False
         elif data is "NCR-QUERY".encode("utf8"):
             # TODO: Send running status to requestor
-        else:
+        elif data is not None:
             print("Unhandled radio packet: {}\n".format(data))
 
 def initialize_io():
@@ -50,8 +46,8 @@ def initialize_io():
 
         adc = ADS.ADS1115(i2c)
 
-        radio_cs = digitalio.DigitalInOut(board.D7)
-        radio_reset = digitalio.DigitalInOut(board.D25)
+        radio_cs = digitalio.DigitalInOut(board.D5)
+        radio_reset = digitalio.DigitalInOut(board.D6p)
         radio = adafruit_rfm9x.RFM9x(spi, radio_cs, radio_reset, 433.0)
         radio.enable_crc = True
 
@@ -65,7 +61,7 @@ def initialize_io():
         print("IO successfully initialized")
 
     except Exception as e:
-        print("Error while initializing IO - {}\n".format(e.message))
+        print("Error while initializing IO - {}\n".format(e))
         sys.exit(1)
 
 def log_i2c_devices(stop_event):
@@ -92,3 +88,7 @@ def log_ow_devices(stop_event, writer):
         writer.endSample()
         
     writer.close()
+
+# If script is directly called, start main
+if __name__ == "__main__":
+    main()

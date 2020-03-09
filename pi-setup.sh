@@ -99,7 +99,7 @@ User=pi
 ExecStart=/usr/bin/python3 /usr/ncr-deployment/$main_dir/main.py
 
 [Install]
-WantedBy=multi-user.target > /etc/systemd/system/ncr-bootstrap.service
+WantedBy=multi-user.target
 " > /etc/systemd/system/ncr-bootstrap.service
 
 /bin/systemctl enable ncr-bootstrap

@@ -5,11 +5,11 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # --- Board Select ---
-board=$(whiptail --backtitle "NCR Pi Setup" \
-  --menu "Select configuration" 15 60 4 \
-  "RPi-1" "BNO055, MMA8451, TCA9548A" \
-  "RPi-2" "DS18B20, ADS1115, Strain Guages" \
-  "RPi-3" "BMP388, BME280, SGP30" \
+board=$(whiptail --backtitle "NCR Pi Setup"
+  --menu "Select configuration" 15 60 4
+  "RPi-1" "BNO055, MMA8451, TCA9548A"
+  "RPi-2" "DS18B20, ADS1115, Strain Guages"
+  "RPi-3" "BMP388, BME280, SGP30"
   "RPi-4 [Zero]" "RFM96W, DS18B20, ADS1115, Strain Guage" 3>&1 1>&2 2>&3)
 
 case $board in
@@ -84,21 +84,25 @@ echo "Installing files to root filesystem..."
 mkdir -p /usr/ncr-deployment &&
 cp -vr ./* /usr/ncr-deployment/
 
-# Creating service file
-printf                                                               \
-"[Unit]\n"                                                           \
-"Description=NCR Bootstrap Service\n"                                \
-"After=network.Target\n"                                             \
-"StartLimitIntervalSec=0\n"                                          \
-"\n"                                                                 \
-"[Service]\n"                                                        \
-"Type=simple\n"                                                      \
-"RestartSec=5\n"                                                     \
-"User=pi\n"                                                          \
-"ExecStart=/usr/bin/python3 /usr/ncr-deployment/$main_dir/main.py\n" \
-"\n"                                                                 \
-"[Install]\n"                                                        \
-"WantedBy=multi-user.target\n" > /etc/systemd/system/ncr-bootstrap.service
+# Create bootstrap service
+echo "Creating bootstrap service..."
+printf "
+[Unit]
+Description=NCR Bootstrap Service
+After=network.Target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+RestartSec=5
+User=pi
+ExecStart=/usr/bin/python3 /usr/ncr-deployment/$main_dir/main.py
+
+[Install]
+WantedBy=multi-user.target > /etc/systemd/system/ncr-bootstrap.service
+" > /etc/systemd/system/ncr-bootstrap.service
+
+/bin/systemctl enable ncr-bootstrap
 
 echo "Done! Rebooting..."
 reboot

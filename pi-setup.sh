@@ -5,11 +5,11 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # --- Board Select ---
-board=$(whiptail --backtitle "NCR Pi Setup"
-  --menu "Select configuration" 15 60 4
-  "RPi-1" "BNO055, MMA8451, TCA9548A"
-  "RPi-2" "DS18B20, ADS1115, Strain Guages"
-  "RPi-3" "BMP388, BME280, SGP30"
+board=$(whiptail --backtitle "NCR Pi Setup"                               \
+  --menu "Select configuration" 15 60 4                                   \
+  "RPi-1" "BNO055, MMA8451, TCA9548A"                                     \
+  "RPi-2" "DS18B20, ADS1115, Strain Guages"                               \
+  "RPi-3" "BMP388, BME280, SGP30"                                         \
   "RPi-4 [Zero]" "RFM96W, DS18B20, ADS1115, Strain Guage" 3>&1 1>&2 2>&3)
 
 case $board in

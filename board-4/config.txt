@@ -3,3 +3,4 @@ i2c="true"
 onewire="true"
 
 friendly_name="rpi-4"
+packages="$packages hostapd dnsmasq"

@@ -1,0 +1,9 @@
+[Unit]
+Description=NCR Bootstrap Service
+After=network.Target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5

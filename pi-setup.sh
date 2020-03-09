@@ -37,7 +37,7 @@ apt upgrade -y -qq
 
 # --- Package Install ---
 echo "Installing required packages..."
-apt install -y python3-pip git -qq
+apt install -y $packages -qq
 
 # --- Default Dependency Install ---
 echo "Installing default dependencies..."
@@ -47,11 +47,17 @@ pip3 install -r default/requirements.txt -q
 echo "Installing dependencies..."
 pip3 install -r $main_dir/requirements.txt -q
 
+# Format USB Stick & create mount point
+umount /dev/sda1 # Just in case it's pre-mounted
+mkfs.exfat /dev/sda1
+mkdir -p /mnt/usb
+echo "/dev/sda1 /mnt/usb exfat gid=1000,uid=1000 0 0" >> /etc/fstab
+
 # --- Default Configurations ---
 echo "Enabling default configs..."
 raspi-config nonint do_overscan 1
 raspi-config nonint do_ssh 0
-echo -n $friendly_name > /etc/hostname
+echo -n $friendly_name.local > /etc/hostname
 
 # --- Board Specific Configurations ---
 echo "Enabling board-specific configs..."
@@ -72,6 +78,27 @@ if "$i2c_clock_stretch"; then
   echo "# I2C Clock Stretch" >> /boot/config.txt
   echo "dtparam=i2c_arm_baudrate=10000" >> /boot/config.txt
 fi
+
+# Copy repo over to /etc
+echo "Installing files to root filesystem..."
+mkdir -p /usr/ncr-deployment &&
+cp -vr ./* /usr/ncr-deployment/
+
+# Creating service file
+printf                                                               \
+"[Unit]\n"                                                           \
+"Description=NCR Bootstrap Service\n"                                \
+"After=network.Target\n"                                             \
+"StartLimitIntervalSec=0\n"                                          \
+"\n"                                                                 \
+"[Service]\n"                                                        \
+"Type=simple\n"                                                      \
+"RestartSec=5\n"                                                     \
+"User=pi\n"                                                          \
+"ExecStart=/usr/bin/python3 /usr/ncr-deployment/$main_dir/main.py\n" \
+"\n"                                                                 \
+"[Install]\n"                                                        \
+"WantedBy=multi-user.target\n" > /etc/systemd/system/ncr-bootstrap.service
 
 echo "Done! Rebooting..."
 reboot

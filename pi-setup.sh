@@ -4,6 +4,8 @@ if [ "$EUID" -ne 0 ]; then
   exit
 fi
 
+set -eo pipefail
+
 # --- Board Select ---
 board=$(whiptail --backtitle "NCR Pi Setup"                               \
   --menu "Select configuration" 15 60 4                                   \

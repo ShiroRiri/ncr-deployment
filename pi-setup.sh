@@ -82,6 +82,7 @@ raspi-config nonint do_overscan 1
 raspi-config nonint do_ssh 0
 raspi-config nonint do_wifi_country US
 echo -n $friendly_name.local > /etc/hostname
+/bin/systemctl enable mosquitto
 
 # --- Board Specific Configurations ---
 echo "Enabling board-specific configs..."

@@ -1,7 +1,7 @@
 spi="true"
 i2c="true"
 onewire="true"
-wifi_ap="true"
+network_host="true"
 
 friendly_name="rpi-4"
 packages="$packages hostapd dnsmasq"

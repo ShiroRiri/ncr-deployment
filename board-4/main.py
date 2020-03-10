@@ -113,7 +113,6 @@ def log_ow_devices(stop_event, writer):
 
     writer.close()
 
-
 def on_connect(client, userdata, flags, rc):
         print("Connected to client with result code " +str(rc))
         client.subscribe(MQTT_PATH_REPLY)

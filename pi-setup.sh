@@ -6,6 +6,13 @@ fi
 
 set -eo pipefail
 
+# --- USB Erase Warning ---
+whiptail --backtitle "NCR Pi Setup" --msgbox \
+"WARNING: THIS SCRIPT WILL ERASE ALL DATA ON THE USB
+PLUGGED INTO THE RASPBERRY PI. ENSURE ALL IMPORTANT DATA
+IS BACKED UP. JOSH IS NOT RESPONSIBLE FOR ACCIDENTALLY
+DELETING YOUR TERM PAPERS." 15 60
+
 # --- Board Select ---
 board=$(whiptail --backtitle "NCR Pi Setup"                               \
   --menu "Select configuration" 15 60 4                                   \
@@ -49,8 +56,22 @@ pip3 install -r default/requirements.txt -q
 echo "Installing dependencies..."
 pip3 install -r $main_dir/requirements.txt -q
 
-# Format USB Stick & create mount point
+# --- ncr-binary Install ---
+git clone https://github.com/ShiroRiri/ncr-binary.git /tmp/ncr-binary
+python3 /tmp/ncr-binary/setup.py install
+
+# --- Format USB Stick & create mount point ---
 umount /dev/sda1 # Just in case it's pre-mounted
+fdisk /dev/sda <<EOF
+g
+n
+1
+
+
+t
+11
+w
+EOF
 mkfs.exfat /dev/sda1
 mkdir -p /mnt/usb
 echo "/dev/sda1 /mnt/usb exfat gid=1000,uid=1000 0 0" >> /etc/fstab
@@ -81,15 +102,43 @@ if "$i2c_clock_stretch"; then
   echo "dtparam=i2c_arm_baudrate=10000" >> /boot/config.txt
 fi
 
-# Copy repo over to /etc
-echo "Installing files to root filesystem..."
-mkdir -p /usr/ncr-deployment &&
-cp -vr ./* /usr/ncr-deployment/
+if "$wifi_ap"; then
+  printf \
+"interface wlan0
+    static ip_address=192.168.4.1/24
+    nohook wpa_supplicant" >> /etc/dhcpcd.conf
+    
+  printf \
+"interface=wlan0
+dhcp-range=192.168.4.2,192.168.4.200,255.255.255.0,72h" > /etc/dnsmasq.conf
 
-# Create bootstrap service
+  printf \
+"interface=wlan0
+driver=nl80211
+ssid=NCRocket-Net
+hw_mode=g
+channel=11
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=0
+ignore_broadcast_ssid=0" > /etc/hostapd/hostapd.conf
+
+  printf "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" >> /etc/default/hostapd
+  
+  /bin/systemctl enable dnsmasq
+  /bin/systemctl unmask hostapd
+  /bin/systemctl enable hostapd
+fi
+
+# --- Copy repo over to /usr/share ---
+echo "Installing files to root filesystem..."
+mkdir -p /usr/share/ncr-deployment &&
+cp -vr ./* /usr/share/ncr-deployment/
+
+# --- Create bootstrap service ---
 echo "Creating bootstrap service..."
-printf "
-[Unit]
+printf \
+"[Unit]
 Description=NCR Bootstrap Service
 After=network.Target
 StartLimitIntervalSec=0
@@ -98,12 +147,10 @@ StartLimitIntervalSec=0
 Type=simple
 RestartSec=5
 User=pi
-ExecStart=/usr/bin/python3 /usr/ncr-deployment/$main_dir/main.py
+ExecStart=/usr/bin/python3 /usr/share/ncr-deployment/$main_dir/main.py
 
 [Install]
-WantedBy=multi-user.target
-" > /etc/systemd/system/ncr-bootstrap.service
-
+WantedBy=multi-user.target" > /etc/systemd/system/ncr-bootstrap.service
 /bin/systemctl enable ncr-bootstrap
 
 echo "Done! Rebooting..."

@@ -4,4 +4,4 @@ onewire="true"
 network_host="true"
 
 friendly_name="rpi-4"
-packages="$packages hostapd dnsmasq"
+packages="$packages hostapd dnsmasq mosquitto"

@@ -82,7 +82,6 @@ raspi-config nonint do_overscan 1
 raspi-config nonint do_ssh 0
 raspi-config nonint do_wifi_country US
 echo -n $friendly_name.local > /etc/hostname
-/bin/systemctl enable mosquitto
 
 # --- Board Specific Configurations ---
 echo "Enabling board-specific configs..."
@@ -106,7 +105,7 @@ if "$i2c_clock_stretch"; then
 dtparam=i2c_arm_baudrate=10000" >> /boot/config.txt
 fi
 
-if "$wifi_ap"; then
+if "$network_host"; then
   printf \
 "interface wlan0
     static ip_address=192.168.4.1/24
@@ -128,6 +127,7 @@ ignore_broadcast_ssid=0" > /etc/hostapd/hostapd.conf
 
   printf "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" >> /etc/default/hostapd
   
+  /bin/systemctl enable mosquitto
   /bin/systemctl enable dnsmasq
   /bin/systemctl unmask hostapd
   /bin/systemctl enable hostapd

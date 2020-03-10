@@ -98,8 +98,10 @@ if "$onewire"; then
 fi
 
 if "$i2c_clock_stretch"; then
-  echo "# I2C Clock Stretch" >> /boot/config.txt
-  echo "dtparam=i2c_arm_baudrate=10000" >> /boot/config.txt
+  printf \
+"[all]
+# I2C Clock Stretch
+dtparam=i2c_arm_baudrate=10000" >> /boot/config.txt
 fi
 
 if "$wifi_ap"; then
@@ -148,7 +150,7 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=simple
-RestartSec=5
+RestartSec=0
 User=pi
 ExecStart=/usr/bin/python3 /usr/share/ncr-deployment/$main_dir/main.py
 

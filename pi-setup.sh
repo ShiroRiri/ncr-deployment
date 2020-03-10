@@ -123,7 +123,6 @@ hw_mode=g
 channel=11
 wmm_enabled=0
 macaddr_acl=0
-auth_algs=0
 ignore_broadcast_ssid=0" > /etc/hostapd/hostapd.conf
 
   printf "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" >> /etc/default/hostapd

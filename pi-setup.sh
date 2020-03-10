@@ -61,7 +61,7 @@ git clone https://github.com/ShiroRiri/ncr-binary.git /tmp/ncr-binary
 python3 /tmp/ncr-binary/setup.py install
 
 # --- Format USB Stick & create mount point ---
-umount /dev/sda1 # Just in case it's pre-mounted
+umount /dev/sda1 || true # Just in case it's pre-mounted
 fdisk /dev/sda <<EOF
 g
 n
@@ -80,6 +80,7 @@ echo "/dev/sda1 /mnt/usb exfat gid=1000,uid=1000 0 0" >> /etc/fstab
 echo "Enabling default configs..."
 raspi-config nonint do_overscan 1
 raspi-config nonint do_ssh 0
+raspi-config nonint do_wifi_country US
 echo -n $friendly_name.local > /etc/hostname
 
 # --- Board Specific Configurations ---
@@ -131,14 +132,13 @@ ignore_broadcast_ssid=0" > /etc/hostapd/hostapd.conf
   /bin/systemctl unmask hostapd
   /bin/systemctl enable hostapd
 else
-  raspi-config noint do_wifi_country US
-  raspi-config noint do_wifi_ssid_passphrase NCRocket-Net
+  raspi-config nonint do_wifi_ssid_passphrase NCRocket-Net
 fi
 
 # --- Copy repo over to /usr/share ---
 echo "Installing files to root filesystem..."
-mkdir -p /usr/share/ncr-deployment &&
-cp -vr ./* /usr/share/ncr-deployment/
+mkdir -p /usr/share/ncr-deployment
+cp -r ./* /usr/share/ncr-deployment/
 
 # --- Create bootstrap service ---
 echo "Creating bootstrap service..."

@@ -128,6 +128,9 @@ ignore_broadcast_ssid=0" > /etc/hostapd/hostapd.conf
   /bin/systemctl enable dnsmasq
   /bin/systemctl unmask hostapd
   /bin/systemctl enable hostapd
+else
+  raspi-config noint do_wifi_country US
+  raspi-config noint do_wifi_ssid_passphrase NCRocket-Net
 fi
 
 # --- Copy repo over to /usr/share ---
